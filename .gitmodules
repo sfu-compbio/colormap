@@ -1,0 +1,15 @@
+[submodule "utils/samtools"]
+	path = utils/samtools
+	url = https://github.com/samtools/samtools.git
+[submodule "utils/htslib"]
+	path = utils/htslib
+	url = https://github.com/samtools/htslib.git
+[submodule "utils/bwa"]
+	path = utils/bwa
+	url = https://github.com/BioInf-Wuerzburg/bwa.git
+[submodule "utils/minia"]
+	path = utils/minia
+	url = https://github.com/GATB/minia.git
+[submodule "utils/utils"]
+	path = utils/utils
+	url = https://github.com/sfu-compbio/utils.git
