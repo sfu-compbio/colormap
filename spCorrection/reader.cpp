@@ -58,7 +58,10 @@ deque<read_t>* readChunk()
 	int cnt = 0;
 	while(kseq_read(_rd_kseqLr) >= 0)
 	{
-		_rd_lrList.push_back(read_t(_rd_kseqLr->name.s, str2Lower(_rd_kseqLr->seq.s)));
+		if(KEEP_CASE)
+			_rd_lrList.push_back(read_t(_rd_kseqLr->name.s, _rd_kseqLr->seq.s));
+		else
+			_rd_lrList.push_back(read_t(_rd_kseqLr->name.s, str2Lower(_rd_kseqLr->seq.s)));
 		cnt++;
 		if(cnt == _rd_maxReadChunk)
 			break;

@@ -37,6 +37,7 @@ extern string 		LR_FILE;
 extern string 		OUTPUT_FILE;
 extern string 		LOG_FILE;
 extern int 			MIN_OVERLAP;
+extern bool 		KEEP_CASE;
 
 void 				initCommon();
 string 				str2Lower(string str);

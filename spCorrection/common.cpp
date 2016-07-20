@@ -15,6 +15,7 @@ string 		LR_FILE = "";
 string 		OUTPUT_FILE = "";
 string 		LOG_FILE = "";
 int 		MIN_OVERLAP = 10-1; //minOverlap 10!!!
+bool 		KEEP_CASE = false;
 
 // global in common
 char 		_com_revVal[128];
@@ -102,12 +103,13 @@ int parseCommandLine(int argc, char *argv[])
 		{"out", 			required_argument, 		0, 				'o'	},
 		{"log", 			required_argument, 		0, 				'e'	},
 		{"debug", 			no_argument, 			0, 				'd'	},
+		{"case", 			no_argument, 			0, 				'c'	},
 		{"help", 			no_argument, 			0, 				'h'	},
 		{"version", 		no_argument, 			0, 				'v'	},
 		{0,0,0,0}
 	};
 
-	while ( (c = getopt_long ( argc, argv, "t:a:i:l:o:e:dhv", longOptions, &index))!= -1 )
+	while ( (c = getopt_long ( argc, argv, "t:a:i:l:o:e:dchv", longOptions, &index))!= -1 )
 	{
 		switch (c)
 		{
@@ -133,6 +135,9 @@ int parseCommandLine(int argc, char *argv[])
 				break;
 			case 'd':
 				IS_DEBUG = 1;
+				break;
+			case 'c':
+				KEEP_CASE = true;
 				break;
 			case 'h':
 				printHelp();
@@ -189,6 +194,8 @@ void printHelp()
 	cerr << "More options:" << endl;
 	cerr << "         -t INT        number of threads [1]" << endl;
 	cerr << "         -i INT        use top mappings with identity higher than INT [60]" << endl;
+	cerr << "         -c            when set preserve the character capital or small case" << endl;
+	cerr << "                       for uncorrected regions [false]" << endl;
 	cerr << "         -v            print version" << endl;
 	cerr << "         -h            print this help" << endl;
 	cerr << endl;
