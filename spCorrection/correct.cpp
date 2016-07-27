@@ -350,7 +350,7 @@ float calcEdit(sam_t &mapObj, string rSeq, int startPos)
             	{
             		if(rIndex > startPos)
             		{
-	            		if(qSeq[qIndex]!=rSeq[rIndex])
+	            		if(tolower(qSeq[qIndex])!=tolower(rSeq[rIndex]))
 	            			edit++;
 	            		remLen++;
             		}

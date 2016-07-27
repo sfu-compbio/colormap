@@ -239,7 +239,7 @@ float getAlignmentIdentity(string cigar, string qSeq, string rSeq, int rStart)
             case 'M':
             	for(i=0; i<n; i++)
             	{
-            		if(qSeq[qIndex]==rSeq[rIndex])
+            		if(tolower(qSeq[qIndex])==tolower(rSeq[rIndex]))
             		{
             			nMatch++;
             		}
