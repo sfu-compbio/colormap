@@ -29,11 +29,13 @@ class edge_t
 public:
 	int source;
 	int dest;
-	string srcStr;
-	string destStr;
+	// string srcStr;
+	// string destStr;
 	double weight; // edit distance of the non-overlapped part of the second read
 	// string suffix;
 	int suffixPos;
+	int srcPos;
+	int destPos;
 	//
 	edge_t()
 	{

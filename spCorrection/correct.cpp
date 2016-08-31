@@ -23,7 +23,7 @@ deque<edge_t> 				dijkstraGetPath2(int vertex, const vector<edge_t> &previous);
 int 						readSuffixPos(sam_t &aln1, int qs, sam_t &aln2, int rs);
 int 						readPrefixPos(sam_t &a, int rs);
 int 						findSuffixPos(sam_t &mapObj2, int suffixRefPos, float &weight);
-bool 						checkOverlap(sam_t &mapObj1, sam_t &mapObj2, int qPos, string &str1, string &str2);
+bool 						checkOverlap(sam_t &mapObj1, sam_t &mapObj2, int qPos, int &srcPos, int &destPos);
 
 
 void initCorrect()
@@ -217,7 +217,8 @@ string processConnectedComponent(deque<sam_t> &nodeList, string rSeq, int &start
 			if(nodeList[k].rStart + MIN_OVERLAP <= nodeList[j].rEnd && nodeList[j].rEnd < nodeList[k].rEnd && nodeList[j].rStart < nodeList[k].rStart) // add an edge just in case of overlap (with at least MIN_OVERLAP bases)
 			{
 				edge_t e1;
-				string tmpStr1, tmpStr2;
+				// string tmpStr1, tmpStr2;
+				int srcPos, destPos;
 				e1.dest = k;
 				p1 = readPrefixPos(nodeList[k], nodeList[j].rEnd);
 				w1 = calcEdit(nodeList[k], rSeq, nodeList[j].rEnd);
@@ -225,7 +226,7 @@ string processConnectedComponent(deque<sam_t> &nodeList, string rSeq, int &start
 
 				for(z=0; z<7; z++)
 				{
-					if(checkOverlap(nodeList[j], nodeList[k], p1+offset[z], tmpStr1, tmpStr2))
+					if(checkOverlap(nodeList[j], nodeList[k], p1+offset[z], srcPos, destPos))
 					{
 						if(p1+offset[z] >= nodeList[k].qEnd)
 							continue;
@@ -236,9 +237,11 @@ string processConnectedComponent(deque<sam_t> &nodeList, string rSeq, int &start
 						// e1.suffix = nodeList[k].read.substr(p1+offset[z], nodeList[k].qEnd-(p1+offset[z])+1);
 						// e1.suffix = tmpStr2.substr(p1+offset[z], nodeList[k].qEnd-(p1+offset[z])+1);
 						e1.suffixPos = p1+offset[z];
+						e1.srcPos = srcPos;
+						e1.destPos = destPos;
 						
-						e1.srcStr = tmpStr1;
-						e1.destStr = tmpStr2;
+						// e1.srcStr = tmpStr1;
+						// e1.destStr = tmpStr2;
 
 						graph[j].push_back(e1);
 						numOfEdges++;
@@ -280,32 +283,57 @@ string processConnectedComponent(deque<sam_t> &nodeList, string rSeq, int &start
 	if(min_distance[endNode] != _cor_max_weight)
 	{
 		deque<edge_t> path = dijkstraGetPath2(endNode, prev_edge);
-
-		//
+		
 		// int indent = 0;
 		// int indentSoFar = 0;
 		// for(j=1; j<path.size(); j++)
 		// {
 		// 	cerr << string(indentSoFar, ' ') << path[j].srcStr << endl;
-		// 	cerr << string(indentSoFar, ' ') << nodeList[path[j].source].quality << endl;
+		// 	// cerr << string(indentSoFar, ' ') << nodeList[path[j].source].quality << endl;
 		// 	indent = path[j].srcStr.size()-path[j].suffixPos;
 		// 	cerr << string(indentSoFar, ' ') << string(indent, ' ') << path[j].destStr << endl;
-		// 	cerr << string(indentSoFar, ' ') << string(indent, ' ') << nodeList[path[j].dest].quality << endl << endl;
+		// 	// cerr << string(indentSoFar, ' ') << string(indent, ' ') << nodeList[path[j].dest].quality << endl;
+		// 	cerr << endl;
 		// 	indentSoFar += indent;
 		// }
-		//
 
+		// startInRef = nodeList[path[1].source].rStart;
+		// // spelledStr += nodeList[path[1].source].read;
+		// spelledStr += path[1].srcStr;
+
+		// for(j=1; j<path.size()-1; j++)
+		// {
+		// 	// spelledStr += path[j].suffix;
+		// 	spelledStr += path[j+1].srcStr.substr(path[j].suffixPos, nodeList[path[j+1].source].qEnd - path[j].suffixPos + 1);
+		// }
+		// spelledStr += path[j].destStr.substr(path[j].suffixPos, nodeList[path[j].dest].qEnd - path[j].suffixPos + 1);
+		// endInRef = nodeList[path[path.size()-1].dest].rEnd;
+
+		// int indent = 0;
+		// int indentSoFar = 0;
+		
 		startInRef = nodeList[path[1].source].rStart;
-		// spelledStr += nodeList[path[1].source].read;
-		spelledStr += path[1].srcStr;
+		int lastPos = 0;
 
-		for(j=1; j<path.size()-1; j++)
+		for(j=1; j<path.size(); j++)
 		{
-			// spelledStr += path[j].suffix;
-			spelledStr += path[j+1].srcStr.substr(path[j].suffixPos, nodeList[path[j+1].source].qEnd - path[j].suffixPos + 1);
+			// cerr << string(indentSoFar, ' ') << nodeList[path[j].source].read << endl;
+			// indent = nodeList[path[j].source].read.size() - path[j].suffixPos;
+			// cerr << string(indentSoFar+indent, ' ') << nodeList[path[j].dest].read << endl;
+			// indentSoFar += indent;
+
+			// cerr << string(indentSoFar-indent+lastPos, ' ') << nodeList[path[j].source].read.substr(lastPos, path[j].srcPos - lastPos + 1) << endl;
+			spelledStr += nodeList[path[j].source].read.substr(lastPos, path[j].srcPos - lastPos + 1);
+			// cerr << spelledStr << endl << endl;
+			lastPos = path[j].destPos + 1;
 		}
-		spelledStr += path[j].destStr.substr(path[j].suffixPos, nodeList[path[j].dest].qEnd - path[j].suffixPos + 1);
+
+		// cerr << string(indentSoFar-indent+lastPos, ' ') << nodeList[path[j-1].dest].read.substr(lastPos) << endl;
+		spelledStr += nodeList[path[j-1].dest].read.substr(lastPos);
+		// cerr << spelledStr << endl << endl;
+
 		endInRef = nodeList[path[path.size()-1].dest].rEnd;
+
 		return str2Upper(spelledStr);
 	}
 	else
@@ -403,7 +431,8 @@ float calcEdit(sam_t &mapObj, string rSeq, int startPos)
         cnt++;
     }
 	// cout<< "\t+\t" << startPos << "\t" << edit << "\t" << remLen << endl;
-    return (float)edit/remLen;
+    // return (float)edit/remLen;
+    return (float)edit/(mapObj.read.size()-remLen);
 }
 
 void dijkstraDistance(deque<deque<edge_t> > &G, int source, vector<double> &min_distance, /*vector<int> &previous, */vector<edge_t> &prev_edge)
@@ -632,33 +661,65 @@ int readPrefixPos(sam_t &aln, int rs)
 // 	return qPos+1;
 // }
 
-bool checkOverlap(sam_t &mapObj1, sam_t &mapObj2, int qPos, string &str1, string &str2)
+// bool checkOverlap(sam_t &mapObj1, sam_t &mapObj2, int qPos, int &str1, int &str2)
+bool checkOverlap(sam_t &mapObj1, sam_t &mapObj2, int qPos, int &srcPos, int &destPos)
 {
-	if(qPos >= mapObj2.read.size())
+	if(qPos <0 || qPos >= mapObj2.read.size())
 		return false;
-	str1 = mapObj1.read;
-	str2 = mapObj2.read;
+
+	// str1 = mapObj1.read;
+	// str2 = mapObj2.read;
 	int l = mapObj1.qEnd;
-	int cnt = 0;
+	int p;
+	int mis_cnt = 0;
+	int bases = 0;
+	int halfBase;
 	// cerr<< "+++" << endl;
 	// cerr<< mapObj1.qName << " " << mapObj1.qStart << " " << mapObj1.qEnd << " " << mapObj1.rStart << " " << mapObj1.rEnd << endl;
 	// cerr<< mapObj2.qName << " " << mapObj2.qStart << " " << mapObj2.qEnd << " " << mapObj2.rStart << " " << mapObj2.rEnd << endl;
-	for(int p = qPos-1; l>=mapObj1.qStart && p>=mapObj2.qStart; p--, l--)
+	for(p = qPos-1; l>=mapObj1.qStart && p>=mapObj2.qStart; p--, l--)
 	{
 		// cerr<< l << "/" << mapObj1.read.size()-1 << "\t" << p << "/" << mapObj2.read.size()-1 << endl;
 		if(mapObj1.read[l]!=mapObj2.read[p])
 		{
-			if(mapObj1.quality[l] > mapObj2.quality[p])
-				str2[p] = str1[l];
-			else if(mapObj1.quality[l] < mapObj2.quality[p])
-				str1[l] = str2[p];
-			cnt++;
+			// if(l < mapObj1.quality.size() && p < mapObj2.quality.size())
+			// {
+			// 	cerr << endl;
+			// 	if(mapObj1.quality[l] > mapObj2.quality[p])
+			// 		str2[p] = str1[l];
+			// 	else if(mapObj1.quality[l] < mapObj2.quality[p])
+			// 		str1[l] = str2[p];
+			// }
+			mis_cnt++;
 		}
+		bases++;
 	}
 
-    return (cnt<=1);
-    // return (cnt<=2);
-    // return (cnt<1);
+	if(mis_cnt <= MAX_MISMATCH)
+	{
+		halfBase = bases/2;
+		l = mapObj1.qEnd;
+		while(halfBase > 0)
+		{
+			halfBase--;
+			l--;
+		}
+		srcPos = l;
+		//
+		halfBase = bases/2;
+		p = qPos - 1;
+		while(halfBase > 0)
+		{
+			halfBase--;
+			p--;
+		}
+		destPos = p;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 deque<edge_t> dijkstraGetPath2(int vertex, const vector<edge_t> &previous)
