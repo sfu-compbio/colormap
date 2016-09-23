@@ -9,9 +9,9 @@ fi
 
 EXEDIR=$(dirname "${BASH_SOURCE[0]}")
 CURRDIR=`pwd`
-LRFILE=$(realpath "${1}")
-SRFILE=$(realpath "${2}")
-OUTDIR=$(realpath "${3}")
+LRFILE=$(readlink -e "${1}")
+SRFILE=$(readlink -e "${2}")
+OUTDIR=$(readlink -e "${3}")
 OUTPRE=$(basename "${4}")
 NTHREAD=$5
 BWAOPTIONS="-aY -A 5 -B 11 -O 2,1 -E 4,3 -k 8 -W 16 -w 40 -r 1 -D 0 -y 20 -L 30,30 -T 2.5 -t $NTHREAD"
