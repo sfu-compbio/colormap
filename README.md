@@ -28,28 +28,28 @@ SP algorithm does not need paired-end information, but OEA algorithm actually us
 Usually, paired-end short reads are stored in two different files. A single interleaved/interlaced read file can be obtained using `fastUtils` program which can be found in `bin` directory after building the program:
 
 ```bash
-path-to-CoLoRMap/bin/fastUtils shuffle -1 read_1.fastq -2 read_2.fastq > read_paired.fastq
+cd testData
+../bin/fastUtils shuffle -1 ill_1.fastq -2 ill_2.fastq -o ill.fastq
 ```
 
 ## Correcting long reads
 To correct long reads, you can use **runCorr.sh** script:
 
 ```bash
-./runCorr.sh <pacbio.fasta> <illumina.fastq> <outDirectory> <outPrefix> <threads>
+../runCorr.sh pac.fasta ill.fastq testCorr pre 4
 ```
-After finishing this, the corrected long reads are stored in `<outPrefix>_sp.fasta` file in `<outDirectory>` directory.
+This runs shortest path correction algorithm for long reads stored in `pac.fasta` by short reads stored in `ill.fastq` using 4 threads. When this is done, the corrected long reads are stored in `testCorr/pre_sp.fasta` file.
 
 ## Improving the correction using One-End Anchors (OEAs) ##
 The script **runOEA.sh** can be used to further improve the quality of corrected long reads by using One-End Anchors (OEAs) to extend the borders of the corrected regions.
 ```bash
-./runOEA.sh <pacbio_corr.fasta> <illumina.fastq> <outDirectory> <outPrefix> <threads>
+../runOEA.sh testCorr/pre_sp.fasta ill.fastq testOEA pre 4
 ```
-When this is done, the corrected long reads are stored in `<outPrefix>_oea.fasta` file in `<outDirectory>` directory.
+This runs OEA algorithm for pre-corrected long reads stored in `testCorr/pre_sp.fasta` by paired-end short reads stored in interleaved/interlaced format in `ill.fastq` using 4 threads. When this is done, the corrected long reads are stored in `testOEA/pre_oea.fasta` file.
 
 ## Publication
-CoLoRMap: Correcting Long Reads by Mapping short reads<br/>
-*Haghshenas E, Hach F, Sahinalp SC, Chauve C*<br/>
-Bioinformatics 32.17 (2016): i545-i551
+*Haghshenas E., Hach F., Sahinalp S.C. and Chauve C.*, "CoLoRMap: Correcting Long Reads by Mapping short reads" [Bioinformatics](http://bioinformatics.oxfordjournals.org/content/32/17/i545.short) (2016) 32 (17): i545-i551
+DOI: [10.1093/bioinformatics/btw463](http://dx.doi.org/10.1093/bioinformatics/btw463)
 
 ## Contact
 Please report problems and bugs on [issues page](https://github.com/sfu-compbio/colormap/issues). Otherwise, contact `ehaghshe[at]sfu[dot]ca`
