@@ -1,4 +1,4 @@
-# CoLoRMap
+# CoLoRMap: Correcting Long noisy Reads by Mapping short reads
 
 ## Installation
 In order to install CoLoRMap, you should first fetch the source code from CoLoRMap git repository.
